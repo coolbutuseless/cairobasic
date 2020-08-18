@@ -1,0 +1,110 @@
+---
+title: "Demo"
+output: html_document
+vignette: >
+  %\VignetteIndexEntry{Demo}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup}
+library(cairobasic)
+```
+
+
+# Introduction
+
+This vignette shows off some of the features of `cairobasic`
+
+```{r}
+library(cairobasic)
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Create a new 'CairoBasic' object
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+width  <- 800
+height <- 400
+cb     <- CairoBasic$new(width = width, height = height)
+
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Add concentric circles
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+N <- 10
+cb$add_circles(
+  x    = rep(width/2, N),
+  y    = 0,
+  r    = seq(width, 0, length.out = N),
+  fill = '#80808020'
+)
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Add Lines with rainbow colouring
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+N <- 500
+cb$add_line_segments(
+  x1 = rep(width/2, N),
+  y1 = 0,
+  x2 = seq(1, width, length.out = N),
+  y2 = height,
+  colour = rainbow(N, alpha = 0.1)
+)
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Add rectangles
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+N <- 10
+
+xy <- expand.grid(x = seq(1, width/2, width/32), y = seq(1, height, width/32))
+xy <- subset(xy, y < width/2 - x - width/16)
+
+cb$add_rectangles(
+  x      = xy$x,
+  y      = xy$y,
+  width  = width/32,
+  height = width/32,
+  fill   = terrain.colors(nrow(xy)),
+  colour = '#20202020'
+)
+
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Add polygons
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+cx  <- width  * 0.85
+cy  <- height * 0.35
+ang <- seq(0, 2*pi, pi/3)
+x   <- cx + 50 * sin(ang)
+y   <- cy + 50 * cos(ang)
+
+idx <- rep(1:7, each = length(x))
+x <- c(x, x + 1, x + 2, x + 3, x + 4, x + 5, x + 6)
+y <- c(y, y + 1, y + 2, y + 3, y + 4, y + 5, y + 6) 
+
+
+cb$add_polygons(
+  x, y, idx, fill = NA, 
+  linewidth = 5,
+  colour = scales::alpha('grey20', seq(0, 0.3, length.out = 7)))
+
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Add Text
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+cb$add_text("{cairobasic}", width*0.65 + 1, 10, fontsize = 50, colour = 'white')
+cb$add_text("{cairobasic}", width*0.65    , 11, fontsize = 50, colour = '#606060a0')
+
+
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+# Show it
+#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+cb$show(interpolate = TRUE)
+```
+
